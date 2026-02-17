@@ -1,0 +1,30 @@
+# GitLab CI/CD for NCG Blog (Rails 7.2, PostgreSQL)
+# https://docs.gitlab.com/ee/ci/
+
+default:
+  image: ruby:3.2
+  cache:
+    key: "${CI_COMMIT_REF_SLUG}-gems"
+    paths:
+      - vendor/bundle
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq libpq-dev nodejs > /dev/null
+    - bundle config set --local path vendor/bundle
+    - bundle config set --local deployment true
+    - bundle install -j $(nproc)
+    - bundle exec rails db:create db:schema:load RAILS_ENV=test
+
+variables:
+  POSTGRES_DB: ncg_blog_test
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: "rc@123"
+  RAILS_ENV: test
+  DATABASE_URL: "postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
+
+test:
+  stage: test
+  services:
+    - name: postgres:15-alpine
+      alias: postgres
+  script:
+    - bundle exec rails test

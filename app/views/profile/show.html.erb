@@ -1,0 +1,49 @@
+<div class="profile-page">
+  <div class="profile-card">
+    <div class="profile-header">
+      <div class="profile-avatar" aria-hidden="true"><%= profile_initial(@user) %></div>
+      <h1 class="profile-name"><%= display_name(@user) %></h1>
+      <p class="profile-email"><%= @user.email %></p>
+    </div>
+
+    <div class="profile-actions">
+      <%= link_to "Edit profile", edit_profile_path, class: "profile-btn profile-btn-primary" %>
+      <%= button_to "Sign out", logout_path, method: :delete, form: { class: "profile-signout-form" }, class: "profile-btn profile-btn-outline" %>
+    </div>
+  </div>
+
+  <div class="profile-posts-section">
+  <h2 class="profile-posts-title">Your posts</h2>
+  <div class="posts-list">
+    <% if @posts.any? %>
+      <% @posts.each do |post| %>
+        <article class="post-card<%= ' post-card-private' if post.private? %>">
+          <%= link_to post_path(post), class: "post-card-link" do %>
+            <h2 class="post-title"><%= post.title %></h2>
+            <div class="post-meta">
+              <time class="post-date"><%= post.created_at.strftime("%b %d, %Y") %></time>
+              <% if post.private? %>
+                <span class="post-badge post-badge-private">Private</span>
+              <% end %>
+            </div>
+            <% if post.display_images.any? %>
+              <div class="post-images-wrap">
+                <% post.display_images.each do |img| %>
+                  <div class="post-image-wrap"><%= image_tag img, class: "post-image", alt: "" %></div>
+                <% end %>
+              </div>
+            <% end %>
+            <div class="post-body"><%= simple_format(post.body) %></div>
+          <% end %>
+          <p class="post-actions">
+            <%= link_to "Edit", edit_post_path(post), class: "post-edit-link" %>
+            <%= button_to "Delete", post_path(post), method: :delete, form: { class: "post-delete-form", onsubmit: "return confirm('Delete this post?');" }, class: "post-delete-btn" %>
+          </p>
+        </article>
+      <% end %>
+    <% else %>
+      <p class="posts-empty">You haven't written any posts yet. <%= link_to "Create one", new_post_path %></p>
+    <% end %>
+  </div>
+  </div>
+</div>

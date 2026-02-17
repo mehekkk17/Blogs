@@ -1,0 +1,71 @@
+<div class="blog-page">
+<h1 class="blog-title">NCG Blog</h1>
+
+<% unless logged_in? %>
+  <p class="blog-create"><%= link_to "Sign in", login_path %> to create posts.</p>
+<% end %>
+
+<%= form_with url: root_path, method: :get, local: true, class: "blog-filter" do |f| %>
+  <div class="blog-filter-row">
+    <%= f.text_field :q, value: @search, placeholder: "Search by keyword...", class: "blog-filter-search" %>
+    <%= f.select :sort, options_for_sort, { selected: @sort }, class: "blog-filter-sort" %>
+    <%= f.submit "Apply", class: "blog-filter-submit" %>
+  </div>
+<% end %>
+
+<div class="posts-list">
+  <% if @posts.any? %>
+    <% @posts.each do |post| %>
+      <article class="post-card<%= ' post-card-private' if post.private? && post.user_id == current_user&.id %>">
+        <%= link_to post_path(post), class: "post-card-link" do %>
+          <h2 class="post-title"><%= post.title %></h2>
+          <div class="post-meta">
+            <span class="post-author"><%= display_name(post.user) %></span>
+            <time class="post-date"><%= post.created_at.strftime("%b %d, %Y") %></time>
+            <% if post.private? && post.user_id == current_user&.id %>
+              <span class="post-badge post-badge-private">Private</span>
+            <% end %>
+          </div>
+          <% if (carousel_images = post.display_images).any? %>
+            <div class="post-show-carousel post-card-carousel" data-carousel-count="<%= carousel_images.size %>" style="--carousel-count: <%= carousel_images.size %>;">
+              <div class="post-show-carousel-track">
+                <% carousel_images.each do |img| %>
+                  <div class="post-show-carousel-slide">
+                    <div class="post-show-image-wrap">
+                      <%= image_tag img, class: "post-show-image", alt: "" %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+              <% if carousel_images.size > 1 %>
+                <button type="button" class="post-show-carousel-btn post-show-carousel-prev" aria-label="Previous image">‹</button>
+                <button type="button" class="post-show-carousel-btn post-show-carousel-next" aria-label="Next image">›</button>
+                <div class="post-show-carousel-dots">
+                  <% carousel_images.each_with_index do |_, i| %>
+                    <button type="button" class="post-show-carousel-dot<%= ' is-active' if i == 0 %>" data-index="<%= i %>" aria-label="Image <%= i + 1 %>"></button>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+          <div class="post-body"><%= simple_format(post.body) %></div>
+        <% end %>
+        <% if current_user && post.user_id == current_user.id %>
+          <p class="post-actions">
+            <%= link_to "Edit", edit_post_path(post), class: "post-edit-link" %>
+            <%= button_to "Delete", post_path(post), method: :delete, form: { class: "post-delete-form", onsubmit: "return confirm('Delete this post?');" }, class: "post-delete-btn" %>
+          </p>
+        <% end %>
+      </article>
+    <% end %>
+  <% else %>
+    <p class="posts-empty">
+      <% if @search.present? %>
+        No posts match "<%= ERB::Util.html_escape(@search) %>". <%= link_to "Clear search", root_path(clear: 1) %>
+      <% else %>
+        No posts yet. <%= logged_in? ? link_to("Create the first one", new_post_path) : "Sign in to create one." %>
+      <% end %>
+    </p>
+  <% end %>
+</div>
+</div>

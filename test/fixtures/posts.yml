@@ -1,0 +1,19 @@
+# frozen_string_literal: true
+
+one:
+  user: one
+  title: First post
+  body: Body of the first post.
+  visibility: public
+
+two:
+  user: two
+  title: Second post
+  body: Body of the second post.
+  visibility: public
+
+private_post:
+  user: one
+  title: Private post
+  body: Only visible to owner.
+  visibility: private

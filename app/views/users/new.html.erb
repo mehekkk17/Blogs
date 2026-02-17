@@ -1,0 +1,43 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h1 class="auth-title">Create an account</h1>
+    <p class="auth-subtitle">Sign up to get started.</p>
+
+    <% if @user.errors.any? %>
+      <div class="auth-errors" role="alert">
+        <p class="auth-errors-title"><%= pluralize(@user.errors.count, "error") %> prevented this account from being saved:</p>
+        <ul>
+          <% @user.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form_with model: @user, url: users_path, local: true, class: "auth-form" do |f| %>
+      <div class="auth-field">
+        <%= f.label :name, "Name (optional)" %>
+        <%= f.text_field :name, placeholder: "Your name", autofocus: true, class: "auth-input" %>
+      </div>
+      <div class="auth-field">
+        <%= f.label :email, "Email" %>
+        <%= f.email_field :email, required: true, placeholder: "you@example.com", class: "auth-input" %>
+      </div>
+      <div class="auth-field">
+        <%= f.label :password, "Password (min 6 characters)" %>
+        <%= f.password_field :password, required: true, placeholder: "••••••••", class: "auth-input" %>
+      </div>
+      <div class="auth-field">
+        <%= f.label :password_confirmation, "Password confirmation" %>
+        <%= f.password_field :password_confirmation, required: true, placeholder: "••••••••", class: "auth-input" %>
+      </div>
+      <div class="auth-actions">
+        <%= f.submit "Create account", class: "auth-submit" %>
+      </div>
+    <% end %>
+
+    <p class="auth-footer">
+      Already have an account? <%= link_to "Sign in", login_path, data: { turbo: false } %>
+    </p>
+  </div>
+</div>

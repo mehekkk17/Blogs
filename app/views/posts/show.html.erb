@@ -1,0 +1,42 @@
+<div class="post-show-page">
+  <article class="post-show<%= ' post-show-private' if @post.private? && @post.user_id == current_user&.id %>">
+    <h1 class="post-show-title"><%= @post.title %></h1>
+    <div class="post-show-meta">
+      <span class="post-show-author"><%= display_name(@post.user) %></span>
+      <time class="post-show-date"><%= @post.created_at.strftime("%b %d, %Y") %></time>
+      <% if @post.private? && @post.user_id == current_user&.id %>
+        <span class="post-badge post-badge-private">Private</span>
+      <% end %>
+    </div>
+    <% if (carousel_images = @post.display_images).any? %>
+      <div class="post-show-carousel" data-carousel-count="<%= carousel_images.size %>" style="--carousel-count: <%= carousel_images.size %>;">
+        <div class="post-show-carousel-track">
+          <% carousel_images.each do |img| %>
+            <div class="post-show-carousel-slide">
+              <div class="post-show-image-wrap">
+                <%= image_tag img, class: "post-show-image", alt: "" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <% if carousel_images.size > 1 %>
+          <button type="button" class="post-show-carousel-btn post-show-carousel-prev" aria-label="Previous image">‹</button>
+          <button type="button" class="post-show-carousel-btn post-show-carousel-next" aria-label="Next image">›</button>
+          <div class="post-show-carousel-dots">
+            <% carousel_images.each_with_index do |_, i| %>
+              <button type="button" class="post-show-carousel-dot<%= ' is-active' if i == 0 %>" data-index="<%= i %>" aria-label="Image <%= i + 1 %>"></button>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+    <div class="post-show-body"><%= simple_format(@post.body) %></div>
+    <% if current_user && @post.user_id == current_user.id %>
+      <p class="post-show-actions">
+        <%= link_to "Edit", edit_post_path(@post), class: "post-edit-link" %>
+        <%= button_to "Delete", post_path(@post), method: :delete, form: { class: "post-delete-form", onsubmit: "return confirm('Delete this post?');" }, class: "post-delete-btn" %>
+      </p>
+    <% end %>
+    <p class="post-show-back"><%= link_to "← Back to blog", root_path %></p>
+  </article>
+</div>

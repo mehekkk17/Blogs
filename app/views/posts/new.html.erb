@@ -1,0 +1,52 @@
+<div class="auth-page">
+  <div class="auth-card auth-card-wide">
+    <h1 class="auth-title">Create post</h1>
+    <p class="auth-subtitle">Write a new blog post.</p>
+
+    <% if @post.errors.any? %>
+      <div class="auth-errors" role="alert">
+        <p class="auth-errors-title"><%= pluralize(@post.errors.count, "error") %> prevented saving:</p>
+        <ul>
+          <% @post.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form_with model: @post, url: posts_path, local: true, class: "auth-form", multipart: true do |f| %>
+      <div class="auth-field">
+        <%= f.label :title, "Title" %>
+        <%= f.text_field :title, placeholder: "Post title", class: "auth-input", autofocus: true %>
+      </div>
+      <div class="auth-field">
+        <%= f.label :body, "Body" %>
+        <%= f.text_area :body, placeholder: "Write your post...", class: "auth-input auth-textarea", rows: 10 %>
+      </div>
+      <div class="auth-field">
+        <%= f.label :images, "Images (optional, multiple allowed)" %>
+        <%= f.file_field :images, accept: "image/*", multiple: true, class: "auth-input" %>
+      </div>
+      <div class="auth-field">
+        <span class="auth-field-label">Visibility</span>
+        <div class="visibility-options">
+          <label class="visibility-option">
+            <%= f.radio_button :visibility, "public", checked: true %>
+            <span>Public</span> — visible to everyone on the blog feed
+          </label>
+          <label class="visibility-option">
+            <%= f.radio_button :visibility, "private" %>
+            <span>Private</span> — visible only to you
+          </label>
+        </div>
+      </div>
+      <div class="auth-actions">
+        <%= f.submit "Create post", class: "auth-submit" %>
+      </div>
+    <% end %>
+
+    <p class="auth-footer">
+      <%= link_to "Back to blog", root_path %>
+    </p>
+  </div>
+</div>

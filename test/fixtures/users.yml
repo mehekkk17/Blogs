@@ -1,0 +1,11 @@
+# frozen_string_literal: true
+
+one:
+  email: one@example.com
+  name: First User
+  password_digest: <%= BCrypt::Password.create("password", cost: 4) %>
+
+two:
+  email: two@example.com
+  name: Second User
+  password_digest: <%= BCrypt::Password.create("password", cost: 4) %>

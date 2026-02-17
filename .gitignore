@@ -1,0 +1,12 @@
+/.bundle/*
+!/.bundle/config
+/vendor/bundle
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+.DS_Store
+.env
+.env*.local
+*.swp
+*.swo

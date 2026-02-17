@@ -1,0 +1,39 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h1 class="auth-title">Edit profile</h1>
+    <p class="auth-subtitle">Update your display name or password.</p>
+
+    <% if @user.errors.any? %>
+      <div class="auth-errors" role="alert">
+        <p class="auth-errors-title"><%= pluralize(@user.errors.count, "error") %> prevented saving:</p>
+        <ul>
+          <% @user.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form_with model: @user, url: profile_path, method: :patch, local: true, class: "auth-form" do |f| %>
+      <div class="auth-field">
+        <%= f.label :name, "Display name" %>
+        <%= f.text_field :name, placeholder: "Your name", class: "auth-input" %>
+      </div>
+      <div class="auth-field">
+        <%= f.label :password, "New password (leave blank to keep current)" %>
+        <%= f.password_field :password, placeholder: "••••••••", class: "auth-input" %>
+      </div>
+      <div class="auth-field">
+        <%= f.label :password_confirmation, "Confirm new password" %>
+        <%= f.password_field :password_confirmation, placeholder: "••••••••", class: "auth-input" %>
+      </div>
+      <div class="auth-actions">
+        <%= f.submit "Save changes", class: "auth-submit" %>
+      </div>
+    <% end %>
+
+    <p class="auth-footer">
+      <%= link_to "Back to profile", profile_path %>
+    </p>
+  </div>
+</div>
