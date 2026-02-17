@@ -14,6 +14,8 @@ services:
     envVars:
       - key: RAILS_ENV
         value: production
+      - key: RAILS_LOG_TO_STDOUT
+        value: "1"
       - key: SECRET_KEY_BASE
         generateValue: true
       - key: DATABASE_URL
