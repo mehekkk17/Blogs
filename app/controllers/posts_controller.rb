@@ -27,7 +27,8 @@ class PostsController < ApplicationController
 
   def update
     attrs = post_params.to_h
-    new_images = attrs.delete("images")  # don't pass to update so existing images aren't replaced
+    new_images = attrs.delete(:images)  # symbol key (to_h); don't pass to update so existing images aren't replaced
+    new_images = select_real_uploads(new_images)
     if @post.update(attrs)
       purge_removed_images  # only purge after successful update
       @post.images.attach(new_images) if new_images.present?
@@ -72,8 +73,12 @@ class PostsController < ApplicationController
 
   def post_params
     p = params.require(:post).permit(:title, :body, :visibility, :image, images: [])
-    # Browsers sometimes send empty strings in images[]; only attach real uploads
-    p[:images] = Array(p[:images]).select { |f| f.respond_to?(:tempfile) && f.tempfile.present? } if p.key?(:images)
+    p[:images] = select_real_uploads(p[:images]) if p.key?(:images)
     p
+  end
+
+  # Browsers often send empty strings in images[]; only return actual file uploads
+  def select_real_uploads(list)
+    Array(list).select { |f| f.respond_to?(:tempfile) && f.tempfile.present? }
   end
 end
