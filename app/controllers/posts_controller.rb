@@ -71,6 +71,9 @@ class PostsController < ApplicationController
   end
 
   def post_params
-    params.require(:post).permit(:title, :body, :visibility, :image, images: [])
+    p = params.require(:post).permit(:title, :body, :visibility, :image, images: [])
+    # Browsers sometimes send empty strings in images[]; only attach real uploads
+    p[:images] = Array(p[:images]).select { |f| f.respond_to?(:tempfile) && f.tempfile.present? } if p.key?(:images)
+    p
   end
 end
