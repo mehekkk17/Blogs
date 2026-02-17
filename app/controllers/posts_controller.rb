@@ -14,8 +14,12 @@ class PostsController < ApplicationController
   end
 
   def create
-    @post = current_user.posts.build(post_params)
+    attrs = post_params.to_h
+    new_images = attrs.delete(:images)
+    new_images = select_real_uploads(new_images)
+    @post = current_user.posts.build(attrs)
     if @post.save
+      @post.images.attach(new_images) if new_images.present?
       redirect_to root_path, notice: "Post created."
     else
       render :new, status: :unprocessable_entity
