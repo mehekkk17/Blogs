@@ -15,7 +15,6 @@ Rails app with login/signup and **PostgreSQL** for storing user credentials.
 1. **Install dependencies**  
    Gems are installed into this project’s `vendor/bundle` so they don’t mix with other apps.
    ```bash
-   cd "/Users/mehakmahajan/Desktop/NCG Blog app"
    bundle install
    ```
 
