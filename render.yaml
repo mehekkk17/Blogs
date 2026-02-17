@@ -1,0 +1,28 @@
+# Render.com blueprint — deploy from repo or dashboard
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: ncg-blog
+    runtime: ruby
+    plan: free
+
+    buildCommand: bundle install
+    startCommand: bundle exec puma -C config/puma.rb
+    releaseCommand: bundle exec rails db:migrate
+
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: SECRET_KEY_BASE
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ncg-blog-db
+          property: connectionString
+
+databases:
+  - name: ncg-blog-db
+    plan: free
+    databaseName: ncg_blog_production
+    user: ncg_blog
