@@ -8,8 +8,9 @@ services:
     plan: free
 
     buildCommand: bundle install
-    startCommand: bundle exec puma -C config/puma.rb
-    releaseCommand: bundle exec rails db:migrate
+    # Run migrations before starting (needed on Free tier; Shell and Pre-deploy are paid-only)
+    startCommand: bundle exec rails db:migrate && bundle exec puma -C config/puma.rb
+    preDeployCommand: bundle exec rails db:migrate
 
     envVars:
       - key: RAILS_ENV

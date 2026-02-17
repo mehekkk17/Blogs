@@ -27,7 +27,7 @@ Use either **Option A** (dashboard) or **Option B** (blueprint).
 | **Branch** | `main` (or your default branch) |
 | **Runtime** | **Ruby** |
 | **Build Command** | `bundle install` |
-| **Start Command** | `bundle exec puma -C config/puma.rb` |
+| **Start Command** | `bundle exec rails db:migrate && bundle exec puma -C config/puma.rb` |
 
 ### 3. Environment variables
 
@@ -41,16 +41,11 @@ In the same Web Service, open **Environment** (left sidebar or tab) and add:
 
 Save.
 
-### 4. Run migrations after first deploy
+### 4. Migrations (Free tier: no Shell, no Pre-deploy)
 
-After the first successful deploy:
+The **Start Command** above runs `db:migrate` before starting Puma, so migrations run on every deploy with no extra step. On **Free** tier, Shell and Pre-deploy command are not available — this start command is the way to run migrations.
 
-- Open your Web Service → **Shell** tab (or **Manual Deploy** → run a release command if available)
-- If Render gives you a one-off shell, run:  
-  `bundle exec rails db:migrate`  
-- If your plan has a **Release Command** field, set it to:  
-  `bundle exec rails db:migrate`  
-  so migrations run on every deploy.
+On **paid** plans you can instead set **Pre-deploy command** in Settings to `bundle exec rails db:migrate` and use a start command of just `bundle exec puma -C config/puma.rb` if you prefer.
 
 ### 5. Deploy
 
@@ -65,8 +60,7 @@ Click **Create Web Service** (or **Save** then **Manual Deploy**). Wait for the 
 3. Render will read `render.yaml` and create:
    - A PostgreSQL database
    - A Web Service with the correct **Build Command** and **Start Command**
-4. After the first deploy, run migrations (Shell or Release Command):  
-   `bundle exec rails db:migrate`
+4. Migrations run automatically via the Start Command (no Shell or Pre-deploy needed on Free tier).
 
 ---
 
@@ -76,7 +70,7 @@ Click **Create Web Service** (or **Save** then **Manual Deploy**). Wait for the 
 2. Check the **Build logs** (not runtime logs). The error message will be near the bottom.
 3. Make sure:
    - **Build Command** is exactly: `bundle install` (no `assets:precompile`).
-   - **Start Command** is exactly: `bundle exec puma -C config/puma.rb`.
+   - **Start Command** is exactly: `bundle exec rails db:migrate && bundle exec puma -C config/puma.rb`.
    - `DATABASE_URL` is set (Internal Database URL from your PostgreSQL service).
    - `SECRET_KEY_BASE` is set (or generated).
 
@@ -100,14 +94,11 @@ The build only installs gems. The **deploy** fails when Render tries to **start*
 |-------------|-----|
 | **DATABASE_URL** / **connection** / **PG::ConnectionBad** | In **Environment**, add `DATABASE_URL` and set it to your PostgreSQL service’s **Internal Database URL**. |
 | **SECRET_KEY_BASE** / **ArgumentError** | In **Environment**, add `SECRET_KEY_BASE` (use “Generate” or run `bin/rails secret` locally and paste). |
-| **relation "schema_migrations" does not exist** / **table doesn't exist** | Run migrations: set **Release Command** to `bundle exec rails db:migrate`, save, and redeploy. Or run `bundle exec rails db:migrate` in the **Shell** tab. |
-| **Release command failed** | Check that `DATABASE_URL` is set and correct; then redeploy so the release command runs again. |
+| **relation "schema_migrations" does not exist** / **table doesn't exist** | Use the **Start Command** that runs migrations first: `bundle exec rails db:migrate && bundle exec puma -C config/puma.rb` (see step 2). Save and redeploy. |
+| **Pre-deploy command failed** | Check that `DATABASE_URL` is set and correct; then redeploy so the pre-deploy command runs again. |
 
-### 3. Set Release Command (if not using render.yaml)
+### 3. Free tier: no Shell, no Pre-deploy
 
-In the Web Service → **Settings** (or **Environment**):
+On **Free** tier, Shell and Pre-deploy command are not available. Use the **Start Command** that runs migrations before Puma: `bundle exec rails db:migrate && bundle exec puma -C config/puma.rb`. On **paid** plans you can use Pre-deploy command in Settings instead if you prefer.
 
-- **Release Command:** `bundle exec rails db:migrate`  
-  so migrations run automatically on each deploy.
-
-After fixing env vars and/or release command, click **Manual Deploy** and watch the same deploy logs to confirm the error is gone.
+After fixing env vars and/or updating the start command, click **Manual Deploy** and watch the deploy logs to confirm the error is gone.
