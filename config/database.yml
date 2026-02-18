@@ -5,16 +5,26 @@ default: &default
   # Use TCP (localhost) instead of Unix socket — fixes "connection on socket ... failed" on macOS/Homebrew
   host: localhost
 
-development:
-  <<: *default
-  database: ncg_blog_development
+default_without_host: &default_without_host
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  # Use TCP (localhost) instead of Unix socket — fixes "connection on socket ... failed" on macOS/Homebrew
+  host: dpg-d6a7unc9c44c738m6p9g-a.oregon-postgres.render.com
 
+
+development:
+  <<: *default_without_host
+
+  database: ncg_blog_development
+  username: localhost
+  password: <%= ENV["NCG_BLOG_DATABASE_PASSWORD"] %>
 test:
   <<: *default
   database: ncg_blog_test
 
 production:
   <<: *default
-  database: ncg_blog_production
-  username: ncg_blog
+  database: ncg_blog_development
+  username: localhost
   password: <%= ENV["NCG_BLOG_DATABASE_PASSWORD"] %>

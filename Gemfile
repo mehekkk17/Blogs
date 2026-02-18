@@ -9,6 +9,7 @@ gem "bcrypt", "~> 3.1.7"
 
 gem "bootsnap", require: false
 gem "tzinfo-data", platforms: %i[ windows jruby ]
+gem 'dotenv-rails', groups: [:development, :test]
 
 group :development do
   gem "web-console"
