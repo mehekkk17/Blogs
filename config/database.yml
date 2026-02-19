@@ -2,21 +2,19 @@ default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  # Use TCP (localhost) instead of Unix socket — fixes "connection on socket ... failed" on macOS/Homebrew
-  host: localhost
+  host: <%= ENV.fetch("NCG_BLOG_DB_HOST", "localhost") %>
+  port: <%= ENV.fetch("NCG_BLOG_DB_PORT", "5432") %>
+  username: <%= ENV["NCG_BLOG_DATABASE_USERNAME"] %>
+  password: <%= ENV["NCG_BLOG_DATABASE_PASSWORD"] %>
 
 development:
   <<: *default
+  database: <%= ENV.fetch("NCG_BLOG_DB_NAME", "ncg_blog_development") %>
 
-  database: ncg_blog_development
-  username: user1
-  password: <%= ENV["NCG_BLOG_DATABASE_PASSWORD"] %>
 test:
   <<: *default
   database: ncg_blog_test
 
 production:
   <<: *default
-  database: ncg_blog_development
-  username: user1
-  password: user909
+  database: <%= ENV.fetch("NCG_BLOG_DB_NAME", "ncg_blog_production") %>

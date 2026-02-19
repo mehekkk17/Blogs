@@ -6,8 +6,6 @@ class PostsController < ApplicationController
   before_action :authorize_post_owner, only: %i[ edit update destroy ]
   before_action :authorize_post_visible, only: %i[ show ]
 
-  def show
-  end
 
   def new
     @post = current_user.posts.build(visibility: "public")
